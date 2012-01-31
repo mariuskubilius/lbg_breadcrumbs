@@ -52,7 +52,7 @@ class BreadcrumbsTest extends \lithium\test\Unit {
 	}
 	
 	public function testsetRoot(){
-		$breadcrumbs->setRoot('changedName', 'changedURI', 'changedOptions');
+		$this->breadcrumbs->setRoot('changedName', 'changedURI', array('changedOptions'));
 		$result = $this->breadcrumbs->getItems();
 		$this->assertEqual($result[0]->getName(), 'changedName');
 		$this->assertEqual($result[0]->getUri(), 'changedURI');
