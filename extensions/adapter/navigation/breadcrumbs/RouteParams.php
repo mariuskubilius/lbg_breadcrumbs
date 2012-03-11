@@ -14,6 +14,7 @@ class RouteParams extends \lithium\core\Object {
 	
 	protected $_classes = array(
 		'breadcrumbs' => 'mg_breadcrumbs\models\BreadCrumbs',
+		'router' => '\lithium\net\http\Router',
 	);
 	
 	/**
@@ -37,9 +38,61 @@ class RouteParams extends \lithium\core\Object {
      * @return array|boolean returns breadcrumb trail array or false on failure.
      */
 	public function get($url, array $params) {
-		return (function($url, $params){
-			return false;
+		$result = $this->_getTrail($url);
+		if(!$result) {
+			$result = $this->_setTrail($url, $params);
+		}
+		return (function($result){
+			return $result;
 		});
+	}
+	
+	/**
+	 * retrieves trail for current url
+	 * @param string $url - an url of current request
+	 * @return array breadcrumb trail for current url. or false if no results found 
+	 */
+	protected function _getTrail($url) {
+		$conditions = array('url' => $url);
+		$breadcrumbs = $this->_classes['breadcrumbs'];
+		$breadcrumbs = $breadcrumbs::first(compact('conditions'));
+		$result = isset($breadcrumbs->data) ? $breadcrumbs->data() : false; 
+		return $result;
+	}
+	
+	
+	protected function _setTrail($url, $params) {
+		$router = $this->_classes['router'];
+		$trailComponents = $this->_getTrailComponents($params);
+		$trailParams = $this->_getCleanParams($trailComponents, $params);
+		$notFound = array();
+		$trailComponents = array_reverse($trailComponents, true);
+		foreach ($trailComponents as $key => $trailComponent){
+			$trailComponent['params'] = $this->_getCleanParams($trailComponent['params'], $trailParams);
+			$result = $this->_getTrail($router::match($trailComponent['params']));
+			if($result) {
+				break;
+			}
+			else{
+				$notFound[$key] = $trailComponent;
+			}
+		}
+		var_dump($notFound);
+	}
+
+	/**
+	 * Return used trail components.
+	 */
+	protected function _getTrailComponents($params) {
+		$match = $this->_config['trail'];
+		return array_intersect_key($match, $params);
+	}
+	
+	/**
+	 * Get params which are being used in query and are set in trail
+	 */
+	protected function _getCleanParams($trail, $params) {
+		return array_merge($trail, array_intersect_key($params, $trail));
 	}
 	
 	/**
@@ -50,20 +103,20 @@ class RouteParams extends \lithium\core\Object {
 		
 	}
 	
-	/**
-	 * retrieves trail for current url
-	 * @param string $url - an url of current request
-	 * @return array breadcrumb trail for current url. or false if no results found 
-	 */
-	protected function _retrieve($url) {
-		
+	protected function _retrieveElements($notFound){
+		foreach($notFound as $key => $crumb) {
+			$model = $crumb['model'];
+			$conditions = array('slug'=>$crumb['params'][$key]);
+			$fields = array('title');
+			$result = $model::first(compact('conditions', 'fields'));
+			var_dump($result->data());
+		}
 	}
 	
-	/**
-	 * gets breadcrumb trails for current set of params.
-	 */
-	protected function _getTrail($params) {
-		
+	protected function _getCrumb($crumb, $key){
+		$model = $crumb['model'];
+		$conditions = array('slug' => $crumb['params'][$key]);
+		$fields = array('title');
 	}
 }
 ?>
