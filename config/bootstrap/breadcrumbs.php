@@ -14,14 +14,50 @@ BreadCrumbs::config(array(
 			'title' => 'Home',
 			'url' => 'resorts',
 		),
-		'params' => array(
-			'location' => array('model' => 'taxonomies\models\Locations'),
-			'resort' => array('model' =>'resorts\models\Nodes'),
-			'category' => array('model' => 'taxonomies\models\Categories'),
-			'entry' => array('model' => 'entry\models\Nodes'),
+		'trail' => array(
+			'location' => array(
+				'params' => array(
+					'controller' => 'Resorts', 
+					'action' => 'index',
+					'location' => null,
+				),
+				'model' => 'taxonomy\models\Locations',
+				'hierarchical' => true, 
+			),
+			
+			'resort' => array(
+				'params' => array(
+					'controller' => 'Resorts', 
+					'action' => 'view',
+					'location' => null,
+					'resort' => null,
+				),
+				'model' => 'resorts\models\Nodes', 
+			),
+			'category' => array(
+				'params' => array(
+					'controller' => 'Resorts', 
+					'action' => 'view',
+					'location' => null,
+					'resort' => null,
+					'category' => null,
+				),
+				'model' => 'taxonomy\models\Categories',
+				'hierarchical' => true 
+			),
+			'entry' => array(
+				'params' => array(
+					'controller' => 'Entries', 
+					'action' => 'view',
+					'location' => null,
+					'resort' => null,
+					'category' => null,
+					'entry' => null, 
+				),
+				'model' => 'entry\models\Nodes', 
+			),
 		),
-	),
-));
+)));
 /**
  * 'location' => string 'switzerland' (length=11)
  *	'resort' => string 'gstaad' (length=6)
