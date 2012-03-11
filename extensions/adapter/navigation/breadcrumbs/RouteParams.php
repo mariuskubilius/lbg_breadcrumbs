@@ -6,10 +6,15 @@
  * @author		  Marius Kubilius
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
-namespace mg_breadcrumbs\extensions\adapter\breadcrumbs;
+namespace mg_breadcrumbs\extensions\adapter\navigation\breadcrumbs;
 
 class RouteParams extends \lithium\core\Object {
 	
+	protected $_config = array();
+	
+	protected $_classes = array(
+		'breadcrumbs' => 'mg_breadcrumbs\models\BreadCrumbs',
+	);
 	
 	/**
 	 * Class constructor.
@@ -21,10 +26,7 @@ class RouteParams extends \lithium\core\Object {
 	 *        - 'path' : Path where uploaded files live `LITHIUM_APP_PATH . '/webroot/uploads'`.
 	 */
 	public function __construct(array $config = array()) {
-		$defaults = array(
-			'path' => Libraries::get(true, 'path') . '/webroot/uploads',
-		);
-		parent::__construct($config + $defaults);
+		parent::__construct($config);
 	}
 
     /**
@@ -34,15 +36,34 @@ class RouteParams extends \lithium\core\Object {
 	 * @param array $options additional options to be passed for breadcrumb processing.
      * @return array|boolean returns breadcrumb trail array or false on failure.
      */
-	public function get($url, array $params, array $options = array()) {
-        $path = $this->_config['path'];
-        return function($self, $params) use (&$path) {
-            $path = "{$path}/{$params['filename']}";
-	        if(file_exists($path)) {
-                return file_get_contents($path);
-	        }
-	        return false;
-	    };
+	public function get($url, array $params) {
+		return (function($url, $params){
+			return false;
+		});
+	}
+	
+	/**
+	 * generates trail for Home item
+	 * @return array trail item for home.
+	 */
+	protected function _getHome() {
+		
+	}
+	
+	/**
+	 * retrieves trail for current url
+	 * @param string $url - an url of current request
+	 * @return array breadcrumb trail for current url. or false if no results found 
+	 */
+	protected function _retrieve($url) {
+		
+	}
+	
+	/**
+	 * gets breadcrumb trails for current set of params.
+	 */
+	protected function _getTrail($params) {
+		
 	}
 }
 ?>
