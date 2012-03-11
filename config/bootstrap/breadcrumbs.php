@@ -3,7 +3,8 @@
  * Configuration for breadcrumbs generation should come with minimal controller, to manualy delete 
  * indvidual items or to flush all breadcrumbs if something went wrong.
  */
-use app\extensions\BreadCrumbs;
+use mg_breadcrumbs\navigation\BreadCrumbs;
+
 BreadCrumbs::config(array(
 	'frontend' => array(
 		'adapter' => 'RouteParams',
