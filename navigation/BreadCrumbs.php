@@ -16,8 +16,6 @@ namespace mg_breadcrumbs\navigation;
  * @see mg_breadcrumbs\extensions\navigation\breacrumbs\adapter
  */
 
-//use app\models\BreadCrumbs;
-
 class BreadCrumbs extends \lithium\core\Adaptable {
 		
 	/**
@@ -45,11 +43,11 @@ class BreadCrumbs extends \lithium\core\Adaptable {
 	 * Reads file from the specified filesystem configuration
 	 *
 	 * @param string $name Configuration to be used for reading
-	 * @param mixed $url a full path with filename and extension to be retrieved
+	 * @param string $url an url retrieved from request used to determine breadcrumb trail
+	 * @param array $params params retrieved from request->params to create breadcrumb trail if non existent.
 	 * @param mixed $options Options for the method and strategies.
-	 * @return mixed Read results on successful filesystem read, null otherwise
+	 * @return array an array of breadcrumb trail
 	 * @filter This method may be filtered.
-	 * @TODO implement
 	 */
 	public static function get($name, $url, array $params = array(), array $options = array()) {
 	    $settings = static::config();
@@ -58,11 +56,10 @@ class BreadCrumbs extends \lithium\core\Adaptable {
             return false;
 	    }
 
-	  $method = static::adapter($name)->get($url, $params $options);
+	  $method = static::adapter($name)->get($url, $params, $options);
 	  $params = compact('url', 'params');
 	  return static::_filter(__FUNCTION__, $params, $method, $settings[$name]['filters']);
 	}
-	
 	
 }
 ?>
