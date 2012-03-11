@@ -6,7 +6,7 @@
 use mg_breadcrumbs\navigation\BreadCrumbs;
 
 BreadCrumbs::config(array(
-	'frontend' => array(
+	'default' => array(
 		'adapter' => 'RouteParams',
 		'separator' => '/',
 		'home' => array(
