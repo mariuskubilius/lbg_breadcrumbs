@@ -37,7 +37,7 @@ class BreadCrumbs extends \lithium\core\Adaptable {
 	 *
 	 * @var string Dot-delimited path.
 	 */
-	protected static $_strategies = 'strategy.navigation.breadcrumbs';
+	//protected static $_strategies = 'strategy.navigation.breadcrumbs';
 	
 	/**
 	 * Reads file from the specified filesystem configuration
@@ -49,16 +49,15 @@ class BreadCrumbs extends \lithium\core\Adaptable {
 	 * @return array an array of breadcrumb trail
 	 * @filter This method may be filtered.
 	 */
-	public static function get($name, $url, array $params = array(), array $options = array()) {
-	    $settings = static::config();
+	public static function get($name, $url, array $params, array $options = array()) {
+		$settings = static::config();
+		if(!isset($settings[$name])) {
+			return false;
+		}
 
-	    if(!isset($settings[$name])) {
-            return false;
-	    }
-
-	  $method = static::adapter($name)->get($url, $params, $options);
-	  $params = compact('url', 'params');
-	  return static::_filter(__FUNCTION__, $params, $method, $settings[$name]['filters']);
+		$method = static::adapter($name)->get($url, $params);
+		$params = compact('url', 'params', 'options');
+		return static::_filter(__FUNCTION__, $params, $method, $settings[$name]['filters']);
 	}
 	
 }
