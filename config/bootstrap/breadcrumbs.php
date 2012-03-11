@@ -5,17 +5,20 @@
  */
 use app\extensions\BreadCrumbs;
 BreadCrumbs::config(array(
-	'separator' => '/',
-	'home' => array(
-		'enabled' => true,
-		'title' => 'Home',
-		'url' => 'resorts',
-	),
-	'params' => array(
-		'location' => array('model' => 'taxonomies\models\Locations'),
-		'resort' => array('model' =>'resorts\models\Nodes'),
-		'category' => array('model' => 'taxonomies\models\Categories'),
-		'entry' => array('model' => 'entry\models\Nodes'),
+	'frontend' => array(
+		'adapter' => 'RouteParams',
+		'separator' => '/',
+		'home' => array(
+			'enabled' => true,
+			'title' => 'Home',
+			'url' => 'resorts',
+		),
+		'params' => array(
+			'location' => array('model' => 'taxonomies\models\Locations'),
+			'resort' => array('model' =>'resorts\models\Nodes'),
+			'category' => array('model' => 'taxonomies\models\Categories'),
+			'entry' => array('model' => 'entry\models\Nodes'),
+		),
 	),
 ));
 /**
