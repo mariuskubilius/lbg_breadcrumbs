@@ -6,7 +6,7 @@
  * @author		  Marius Kubilius
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
-namespace mg_breadcrumbs\extensions\adapter\breadcrumbs
+namespace mg_breadcrumbs\extensions\adapter\breadcrumbs;
 
 class RouteParams extends \lithium\core\Object {
 	
