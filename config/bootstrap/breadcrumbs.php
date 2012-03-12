@@ -8,12 +8,6 @@ use mg_breadcrumbs\navigation\BreadCrumbs;
 BreadCrumbs::config(array(
 	'frontend' => array(
 		'adapter' => 'RouteParams',
-		'separator' => '/',
-		'home' => array(
-			'enabled' => true,
-			'title' => 'Home',
-			'url' => 'resorts',
-		),
 		'trail' => array(
 			'location' => array(
 				'params' => array(
@@ -58,10 +52,4 @@ BreadCrumbs::config(array(
 			),
 		),
 )));
-/**
- * 'location' => string 'switzerland' (length=11)
- *	'resort' => string 'gstaad' (length=6)
- *	'category' => string 'tourist-information' (length=19)
- *	'entry' => string 'gstaad-info' (length=11)
- */
 
