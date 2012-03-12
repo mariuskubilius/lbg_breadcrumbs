@@ -7,8 +7,48 @@ class BreadCrumbs extends \lithium\template\Helper {
 		'breadcrumbs' => '\mg_breadcrumbs\navigation\BreadCrumbs',
 	);
 	
-	public function output($key = 'default', array $options = array()) {
-		
+	/**
+	 * render breadcrumbs in layout. Calls adapter for breadcrumbs and retrieves them.
+	 */
+	public function show($key = 'default', array $options = array()) {
+		$options += array(
+			'type' => 'element',
+			'template' => 'breadcrumbs',
+			'data' => array(),
+			'options' => array(),
+			'showHome' => true,
+			'home' => array('title' => 'Home', 'url' => '/'),
+			'separator' => '/',
+		);
+		$request = $this->_context->request();
+		$url = $request->url;
+		$params = $request->params;
+		$breadcrumbs = $this->_classes['breadcrumbs'];
+		$view = $this->_context->view();
+		$output = '';
+		$type = array($options['type'] => $options['template']);
+		$trail = $breadcrumbs::get($key, $url, $params, $options['options']);
+		if($options['showHome']){
+			
+		}
+		if ($trail) {
+			
+			$data = $options['data'] + array('trail' => $trail['trail'], 'separator' => $options['separator']);
+					
+			try {
+				$output = $view->render($type, $data, array());
+			} catch (\Exception $e) {
+				$output = $view->render($type, $data, array('library' => 'mg_breadcrumbs'));
+			}
+		}
+		return $output;
+		 
+				
+	}
+	
+	protected function _appendHome($home, $trail) {
+		$trail = array_merge(array($home), $trail['trail']);
+		return $trail;
 	}
 }
 
