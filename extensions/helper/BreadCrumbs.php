@@ -28,12 +28,10 @@ class BreadCrumbs extends \lithium\template\Helper {
 		$output = '';
 		$type = array($options['type'] => $options['template']);
 		$trail = $breadcrumbs::get($key, $url, $params, $options['options']);
-		if($options['showHome']){
-			
-		}
+
 		if ($trail) {
-			
-			$data = $options['data'] + array('trail' => $trail['trail'], 'separator' => $options['separator']);
+			$trail = $options['showHome'] ? array_merge(array($options['home']), $trail['trail']) : $trail['trail'];
+			$data = $options['data'] + array('trail' => $trail, 'separator' => $options['separator']);
 					
 			try {
 				$output = $view->render($type, $data, array());
@@ -44,11 +42,6 @@ class BreadCrumbs extends \lithium\template\Helper {
 		return $output;
 		 
 				
-	}
-	
-	protected function _appendHome($home, $trail) {
-		$trail = array_merge(array($home), $trail['trail']);
-		return $trail;
 	}
 }
 
