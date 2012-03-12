@@ -40,8 +40,9 @@ class RouteParams extends \lithium\core\Object {
 	public function get($url, array $params) {
 		$result = $this->_getTrail($url);
 		if(!$result) {
-			$result = $this->_setTrail($url, $params);
+			$result = $this->_setTrail($params, $url);
 		}
+		var_dump($result);
 		return (function($result){
 			return $result;
 		});
@@ -56,12 +57,13 @@ class RouteParams extends \lithium\core\Object {
 		$conditions = array('url' => $url);
 		$breadcrumbs = $this->_classes['breadcrumbs'];
 		$breadcrumbs = $breadcrumbs::first(compact('conditions'));
-		$result = isset($breadcrumbs->data) ? $breadcrumbs->data() : false; 
+		$result = $breadcrumbs ? $breadcrumbs->data() : false; 
 		return $result;
+		
 	}
 	
 	
-	protected function _setTrail($url, $params) {
+	protected function _setTrail($params, $url) {
 		$router = $this->_classes['router'];
 		$trailComponents = $this->_getTrailComponents($params);
 		$trailParams = $this->_getCleanParams($trailComponents, $params);
@@ -69,7 +71,9 @@ class RouteParams extends \lithium\core\Object {
 		$trailComponents = array_reverse($trailComponents, true);
 		foreach ($trailComponents as $key => $trailComponent){
 			$trailComponent['params'] = $this->_getCleanParams($trailComponent['params'], $trailParams);
-			$result = $this->_getTrail($router::match($trailComponent['params']));
+			$routeUrl = $router::match($trailComponent['params']);
+			$trailComponent['url'] = $routeUrl;
+			$result = $this->_getTrail($url);
 			if($result) {
 				break;
 			}
@@ -77,7 +81,22 @@ class RouteParams extends \lithium\core\Object {
 				$notFound[$key] = $trailComponent;
 			}
 		}
-		var_dump($notFound);
+		if(!isset($result)){
+			$result = array();
+			$result['trail'] = array(); 
+		}
+		var_dump($result);
+		$result['url'] = $url;
+		$notFound = array_reverse($notFound);
+		foreach($notFound as $key => $crumb) {
+			$trail = $this->_getCrumb($crumb, $key);
+			$trail['url'] = $crumb['url'];
+			$result['trail'][] = $trail; 
+		}
+		if($result['trail']){
+			return $this->_saveTrail($result)? $result : false;
+		}
+		else return false;
 	}
 
 	/**
@@ -95,28 +114,19 @@ class RouteParams extends \lithium\core\Object {
 		return array_merge($trail, array_intersect_key($params, $trail));
 	}
 	
-	/**
-	 * generates trail for Home item
-	 * @return array trail item for home.
-	 */
-	protected function _getHome() {
-		
-	}
-	
-	protected function _retrieveElements($notFound){
-		foreach($notFound as $key => $crumb) {
-			$model = $crumb['model'];
-			$conditions = array('slug'=>$crumb['params'][$key]);
-			$fields = array('title');
-			$result = $model::first(compact('conditions', 'fields'));
-			var_dump($result->data());
-		}
-	}
-	
 	protected function _getCrumb($crumb, $key){
 		$model = $crumb['model'];
 		$conditions = array('slug' => $crumb['params'][$key]);
-		$fields = array('title');
+		$fields = array('_id'=>false, 'title');
+		$result = $model::first(compact('conditions', 'fields'));
+		$result = $result ? $result->data() : false;
+		return $result;
+	}
+	
+	protected function _saveTrail($data){
+		$breadcrumbs = $this->_classes['breadcrumbs'];
+		$result = $breadcrumbs::create($data);
+		return $result->save()?true:false;
 	}
 }
 ?>
