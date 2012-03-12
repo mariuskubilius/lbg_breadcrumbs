@@ -42,7 +42,6 @@ class RouteParams extends \lithium\core\Object {
 		if(!$result) {
 			$result = $this->_setTrail($params, $url);
 		}
-		var_dump($result);
 		return (function($result){
 			return $result;
 		});
