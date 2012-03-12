@@ -84,7 +84,6 @@ class RouteParams extends \lithium\core\Object {
 			$result = array();
 			$result['trail'] = array(); 
 		}
-		var_dump($result);
 		$result['url'] = $url;
 		$notFound = array_reverse($notFound);
 		foreach($notFound as $key => $crumb) {
