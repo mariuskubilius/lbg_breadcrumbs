@@ -63,15 +63,18 @@ class RouteParams extends \lithium\core\Object {
 	
 	
 	protected function _setTrail($params, $url) {
-		$router = $this->_classes['router'];
+		
+		
 		$trailComponents = $this->_getTrailComponents($params);
 		$trailParams = $this->_getCleanParams($trailComponents, $params);
+		
 		$notFound = array();
+		
 		$trailComponents = array_reverse($trailComponents, true);
+		
 		foreach ($trailComponents as $key => $trailComponent){
 			$trailComponent['params'] = $this->_getCleanParams($trailComponent['params'], $trailParams);
-			$routeUrl = $router::match($trailComponent['params']);
-			$trailComponent['url'] = $routeUrl;
+			$trailComponent['url'] = $this->_parseRoute($trailComponent['params']);
 			$result = $this->_getTrail($url);
 			if($result) {
 				break;
@@ -80,6 +83,7 @@ class RouteParams extends \lithium\core\Object {
 				$notFound[$key] = $trailComponent;
 			}
 		}
+		
 		if(!isset($result)){
 			$result = array();
 			$result['trail'] = array(); 
@@ -88,8 +92,13 @@ class RouteParams extends \lithium\core\Object {
 		$notFound = array_reverse($notFound);
 		foreach($notFound as $key => $crumb) {
 			$trail = $this->_getCrumb($crumb, $key);
+			if(isset($crumb['hierarchical'])&&isset($trail['hierarchy'])){
+				$result['trail'] = array_merge($result['trail'],$this->_parseHierarchy($trail['hierarchy'], $crumb, $key));
+				unset($trail['hierarchy']);
+			} 
+			
 			$trail['url'] = $crumb['url'];
-			$result['trail'][] = $trail; 
+			$result['trail'][] = $trail;
 		}
 		if($result['trail']){
 			return $this->_saveTrail($result)? $result : false;
@@ -115,16 +124,34 @@ class RouteParams extends \lithium\core\Object {
 	protected function _getCrumb($crumb, $key){
 		$model = $crumb['model'];
 		$conditions = array('slug' => $crumb['params'][$key]);
-		$fields = array('_id'=>false, 'title');
+		$fields = array('_id'=>false, 'title', 'hierarchy.title', 'hierarchy.slug');
 		$result = $model::first(compact('conditions', 'fields'));
 		$result = $result ? $result->data() : false;
 		return $result;
+	}
+	
+	protected function _parseHierarchy($hierarchy, $crumb, $key){
+		$result = array();
+		foreach($hierarchy as $item){
+			$crumb['params'][$key] = $item['slug'];
+			$result[] = array(
+				'title' => $item['title'],
+				'url' => $this->_parseRoute($crumb['params']),
+			);
+		}
+		return $result;
+		 
 	}
 	
 	protected function _saveTrail($data){
 		$breadcrumbs = $this->_classes['breadcrumbs'];
 		$result = $breadcrumbs::create($data);
 		return $result->save()?true:false;
+	}
+
+	protected function _parseRoute($params) {
+		$router = $this->_classes['router'];
+		return $router::match($params);
 	}
 }
 ?>

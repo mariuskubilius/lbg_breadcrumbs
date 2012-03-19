@@ -1,3 +1,4 @@
+<div class="span12">
 <?php $current = array_pop($trail); ?>
 <ul class="breadcrumb">
 <?php foreach($trail as $crumb): ?>
@@ -8,4 +9,4 @@
 <?php endforeach; ?>
 <li class="active"><?= $current['title']; ?></li>
 </ul>
-	
+</div>

@@ -16,7 +16,6 @@ BreadCrumbs::config(array(
 					'location' => null,
 				),
 				'model' => 'taxonomy\models\Locations',
-				'hierarchical' => true, 
 			),
 			
 			'resort' => array(
@@ -26,7 +25,7 @@ BreadCrumbs::config(array(
 					'location' => null,
 					'resort' => null,
 				),
-				'model' => 'resorts\models\Nodes', 
+				'model' => 'entry\models\Resorts', 
 			),
 			'category' => array(
 				'params' => array(
